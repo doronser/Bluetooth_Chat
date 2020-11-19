@@ -15,12 +15,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class ConnectionActivity extends AppCompatActivity {
+    //added comment for pull request
     //init list and adapter for paired devices context menu
     private ArrayList<String> devices_list = new ArrayList<>();
     private ArrayAdapter<String> devices_listAdapter;
 
     //init list and adapter for chat messages
-    //private ArrayList<String> chat_list = new ArrayList<>();
+    private ArrayList<String> chat_list = new ArrayList<>();
     //private ArrayAdapter<String> chat_listAdapter;
 
     @Override
@@ -37,6 +38,7 @@ public class ConnectionActivity extends AppCompatActivity {
 
         //add dummy item
         devices_list.add("dummy list item");
+        chat_list.add("stupid");
         devices_listAdapter.notifyDataSetChanged();
 
         //button to switch activity
