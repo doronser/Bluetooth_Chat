@@ -38,7 +38,6 @@ public class ConnectionActivity extends AppCompatActivity {
 
         //add dummy item
         devices_list.add("dummy list item");
-        chat_list.add("stupid");
         devices_listAdapter.notifyDataSetChanged();
 
         //button to switch activity
