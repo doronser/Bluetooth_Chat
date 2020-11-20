@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BluetoothChat</string>
+    <string name="app_name">BGUtooth</string>
     <string name="turn_on_bluetooth">Turn On Bluetooth</string>
     <string name="make_visible">Make Visible</string>
     <string name="show_paired_devices">Show Paired Devices</string>
