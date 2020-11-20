@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,9 +19,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class ConnectionActivity extends AppCompatActivity {
-    //init BT service
+    //init BT service vars
     int REQUEST_ENABLE_BT=1;
     int color_toggle = 0;
 
@@ -79,21 +81,22 @@ public class ConnectionActivity extends AppCompatActivity {
             }
         });
 
-        //DEBUG ONLY: use the show paired button to test color change on press
-        /*
+        //button to get paired devices list
         Button show_paired_btn = this.findViewById(R.id.show_paired_btn);
         show_paired_btn.setOnClickListener(v -> {
-            if (color_toggle==0) {
-                show_paired_btn.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.button_green));
-                Toast.makeText(getApplicationContext(),"Bluetooth Turned ON",Toast.LENGTH_SHORT).show();
-                color_toggle=0;
-            } else {
-                show_paired_btn.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.button_red));
-                Toast.makeText(getApplicationContext(),"Bluetooth Turned OFF", Toast.LENGTH_SHORT).show();
-                color_toggle=1;
+            //get paired devices object (name + MAC per device)
+            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+            if (pairedDevices.size() > 0) {
+                // There are paired devices. Get the name and address of each paired device.
+                for (BluetoothDevice device : pairedDevices) {
+                    devices_list.add(device.getName());
+                }
+                devices_listAdapter.notifyDataSetChanged();
             }
+
         });
-        */
+
 
 
 
@@ -117,12 +120,8 @@ public class ConnectionActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        //AdapterView.AdapterContextMenuInfo info =
-        //        (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         if (item.getItemId() == R.id.cmenu_connect) {
             Toast.makeText(getApplicationContext(), "connecting...", Toast.LENGTH_SHORT).show();
-            devices_list.set(0, "changed!");
-            devices_listAdapter.notifyDataSetChanged();
             return true;
         }
         return super.onContextItemSelected(item);
