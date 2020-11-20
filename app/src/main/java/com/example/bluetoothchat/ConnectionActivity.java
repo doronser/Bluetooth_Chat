@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class ConnectionActivity extends AppCompatActivity {
     //init BT service
     int REQUEST_ENABLE_BT=1;
+    int color_toggle = 0;
 
 
 
@@ -40,15 +41,14 @@ public class ConnectionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connection_layout);
 
-        //add dummy item to devices list
-        devices_list.add("dummy list item");
-        devices_listAdapter.notifyDataSetChanged();
+
 
         //get BT adapter
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
             Log.w("no BT", "Failed to get device BlueTooth adapter.");
+            //System.exit(0);
         }
 
         //Paired Devices Context Menu
@@ -57,6 +57,10 @@ public class ConnectionActivity extends AppCompatActivity {
         ListView lv =  findViewById(R.id.paried_devices_lv);
         lv.setAdapter(devices_listAdapter);
         registerForContextMenu(lv);
+
+        //add dummy item to devices list
+        devices_list.add("dummy list item");
+        devices_listAdapter.notifyDataSetChanged();
 
         //button to turn on BT
         Button BT_on_btn = this.findViewById(R.id.BT_on_btn);
@@ -74,6 +78,22 @@ public class ConnectionActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Bluetooth Turned OFF", Toast.LENGTH_SHORT).show();
             }
         });
+
+        //DEBUG ONLY: use the show paired button to test color change on press
+        /*
+        Button show_paired_btn = this.findViewById(R.id.show_paired_btn);
+        show_paired_btn.setOnClickListener(v -> {
+            if (color_toggle==0) {
+                show_paired_btn.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.button_green));
+                Toast.makeText(getApplicationContext(),"Bluetooth Turned ON",Toast.LENGTH_SHORT).show();
+                color_toggle=0;
+            } else {
+                show_paired_btn.setBackgroundTintList(ContextCompat.getColorStateList(this,R.color.button_red));
+                Toast.makeText(getApplicationContext(),"Bluetooth Turned OFF", Toast.LENGTH_SHORT).show();
+                color_toggle=1;
+            }
+        });
+        */
 
 
 
