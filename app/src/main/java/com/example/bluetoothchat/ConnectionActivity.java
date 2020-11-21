@@ -101,13 +101,18 @@ public class ConnectionActivity extends AppCompatActivity {
 
 
 
-        //button to switch activity
+        //button to make device discoverable
         Button make_visible_btn = this.findViewById(R.id.make_visible_btn);
         make_visible_btn.setOnClickListener(v -> {
 
-            Intent intent = new Intent(ConnectionActivity.this, ChatActivity.class);
-            intent.putExtra("msg", "switched activities :)");
-            startActivity(intent);
+            Intent makeVisibleIntent;
+            makeVisibleIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            startActivity(makeVisibleIntent);
+            Toast.makeText(getApplicationContext(),"Device is now visible", Toast.LENGTH_SHORT).show();
+            //old code to switch tasks
+//            Intent intent = new Intent(ConnectionActivity.this, ChatActivity.class);
+//            intent.putExtra("msg", "switched activities :)");
+//            startActivity(intent);
 
         });
     }
