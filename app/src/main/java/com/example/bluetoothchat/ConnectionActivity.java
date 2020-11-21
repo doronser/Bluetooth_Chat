@@ -24,7 +24,6 @@ import java.util.Set;
 public class ConnectionActivity extends AppCompatActivity {
     //init BT service vars
     int REQUEST_ENABLE_BT=1;
-    int color_toggle = 0;
 
 
 
@@ -34,7 +33,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private ArrayAdapter<String> devices_listAdapter;
 
     //init list and adapter for chat messages
-    //rivate ArrayList<String> chat_list = new ArrayList<>();
+    //private ArrayList<String> chat_list = new ArrayList<>();
     //private ArrayAdapter<String> chat_listAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -84,17 +83,19 @@ public class ConnectionActivity extends AppCompatActivity {
         //button to get paired devices list
         Button show_paired_btn = this.findViewById(R.id.show_paired_btn);
         show_paired_btn.setOnClickListener(v -> {
+            //clear any previous devices
+            devices_list.clear();
+
             //get paired devices object (name + MAC per device)
             Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 
+            //update list + adapter with found devices
             if (pairedDevices.size() > 0) {
-                // There are paired devices. Get the name and address of each paired device.
                 for (BluetoothDevice device : pairedDevices) {
                     devices_list.add(device.getName());
                 }
                 devices_listAdapter.notifyDataSetChanged();
             }
-
         });
 
 
