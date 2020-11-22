@@ -8,22 +8,27 @@
 
     <EditText
         android:id="@+id/Chat_msg_txt"
-        android:layout_width="306dp"
+        android:layout_width="0dp"
         android:layout_height="70dp"
-        android:hint="@string/write_a_message"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginEnd="5dp"
         android:autofillHints="Enter a message"
-        android:inputType="textLongMessage" />
+        android:hint="@string/write_a_message"
+        android:inputType="textLongMessage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/send_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/send_btn"
-        android:layout_width="102dp"
-        android:layout_height="67dp"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="8dp"
         android:text="@string/send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/Chat_msg_txt" />
+        app:layout_constraintTop_toBottomOf="@+id/chat_lv"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ListView
         android:id="@+id/chat_lv"
