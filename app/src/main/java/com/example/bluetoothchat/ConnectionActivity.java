@@ -29,8 +29,8 @@ import java.util.UUID;
 public class ConnectionActivity extends AppCompatActivity {
     //init BT service vars
     int REQUEST_ENABLE_BT=1;
-    BluetoothAdapter bluetoothAdapter;
-    Set<BluetoothDevice> pairedDevices;
+    //public BluetoothAdapter bluetoothAdapter;
+    protected Set<BluetoothDevice> pairedDevices;
 
     //added comment for pull request
     //init list and adapter for paired devices context menu
@@ -135,30 +135,30 @@ public class ConnectionActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.cmenu_connect) {
 
-            //TODO: implement BT connection
-//            //get the MenuItem text
-//            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-//            String key = ((TextView) info.targetView).getText().toString();
-//
-//            // Get the device MAC address, which is the last 17 chars in the View
-//            String MACadd = key.substring(key.length() - 17);
-//
-//            BluetoothDevice bt_device = null;
-//            Toast.makeText(getApplicationContext(), "connecting...", Toast.LENGTH_SHORT).show();
-//
-//            if (pairedDevices.size() > 0) {
-//                for (BluetoothDevice device : pairedDevices) {
-//                    if (device.getName().equals("DORONZ")) {
-//                        bt_device = device;
-//                        ConnectThread testThread =  new ConnectThread(bt_device);
-//                        testThread.run();
-//                        testThread.cancel();
-//                    }
-//                }
-//            } else {
-//                Log.w("Connect", "failed to find devices");
-//            }
-            Toast.makeText(getApplicationContext(), "connecting...", Toast.LENGTH_SHORT).show();
+            //implement BT connection
+            //get the MenuItem text
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            String key = ((TextView) info.targetView).getText().toString();
+            Log.d("Connect","CONNECTION TO: "+key);
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter(); //hail mary
+            if (!key.isEmpty() && bluetoothAdapter != null) {
+                // Get the device by MAC address, which is the last 17 chars in the View
+                String MACadd = key.substring(key.length() - 17);
+                Log.d("Connect","CONNECTION TO: "+MACadd);
+                BluetoothDevice bt_device = bluetoothAdapter.getRemoteDevice(MACadd);
+
+                //start new thread to try and conenct to the BT device
+                Log.d("Connect", "trying to connect to " + bt_device.getName());
+                ConnectThread testThread = new ConnectThread(bt_device);
+
+                testThread.start();
+                testThread.cancel();
+            } else {
+                if (bluetoothAdapter == null) {
+                    Log.e("Connect","BT adapter == null");
+                }
+                Log.e("Connect","CONNECTION failed");
+            }
             return true;
         }
         return super.onContextItemSelected(item);
@@ -167,14 +167,13 @@ public class ConnectionActivity extends AppCompatActivity {
 
     //Connection class
     private class ConnectThread extends Thread {
+        private final BluetoothAdapter bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
         private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
 
         public ConnectThread(BluetoothDevice device) {
             // Use a temporary object that is later assigned to mmSocket
             // because mmSocket is final.
             BluetoothSocket tmp = null;
-            mmDevice = device;
 
             try {
                 // Get a BluetoothSocket to connect with the given BluetoothDevice.
@@ -187,7 +186,7 @@ public class ConnectionActivity extends AppCompatActivity {
             mmSocket = tmp;
         }
 
-        public void run() {
+        public void start() {
             // Cancel discovery because it otherwise slows down the connection.
             bluetoothAdapter.cancelDiscovery();
 
