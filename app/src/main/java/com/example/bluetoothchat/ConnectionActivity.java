@@ -63,6 +63,7 @@ public class ConnectionActivity extends AppCompatActivity {
         devices_list.add("dummy list item");
         devices_listAdapter.notifyDataSetChanged();
 
+        //new comment for Raz
         //button to turn on BT
         Button BT_on_btn = this.findViewById(R.id.BT_on_btn);
         BT_on_btn.setOnClickListener(v -> {

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 public class ChatActivity extends AppCompatActivity {
-
+    //another comment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
