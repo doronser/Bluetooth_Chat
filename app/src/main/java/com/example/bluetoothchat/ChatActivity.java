@@ -12,6 +12,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 //import android.widget.TextView;
 import android.widget.Toast;
@@ -24,8 +26,10 @@ import java.util.UUID;
 
 
 
+@SuppressWarnings("FieldCanBeLocal")
 public class ChatActivity extends AppCompatActivity {
     //init list and adapter for chat messages
+    @SuppressWarnings("FieldMayBeFinal")
     private ArrayList<String> chat_list = new ArrayList<>();
     private ArrayAdapter<String> chat_listAdapter;
 
@@ -34,39 +38,56 @@ public class ChatActivity extends AppCompatActivity {
     private ConnectThread mConnectThread;
     SendReceive sendReceive;
 
-    static final int STATE_LISTENING = 1;
-    static final int STATE_CONNECTING=2;
-    static final int STATE_CONNECTED=3;
-    static final int STATE_CONNECTION_FAILED=4;
-    static final int STATE_MESSAGE_RECEIVED=5;
+    static final int STATE_CONNECTION_FAILED=1;
+    static final int STATE_MESSAGE_RECEIVED=2;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
 
+        //get UI elements
+        ListView lv =  findViewById(R.id.chat_lv);
+        Button send_btn = findViewById(R.id.send_btn);
+        EditText Chat_msg_txt = findViewById(R.id.Chat_msg_txt);
+
+        //get BT adapter
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        //get device to connect to from MainActivity intent
+        Intent intent = this.getIntent();
+        BluetoothDevice bt_device = intent.getExtras().getParcelable("bt_device");
+
+        //Connect to BT server
+        Toast.makeText(getApplicationContext(), "Connecting to " + bt_device.getName(), Toast.LENGTH_SHORT).show();
+        if (bluetoothAdapter != null) {
+            mConnectThread = new ConnectThread(bt_device);
+            mConnectThread.start();
+            Log.d("Chat", "Connection Success!");
+        }
+
+        //init received messages list
         chat_listAdapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chat_list);
-        ListView lv =  findViewById(R.id.paried_devices_lv);
         lv.setAdapter(chat_listAdapter);
         registerForContextMenu(lv);
 
-        Intent intent = this.getIntent();
-        BluetoothDevice bt_device = intent.getExtras().getParcelable("bt_device");
-        Toast.makeText(getApplicationContext(), "Connecting to " + bt_device.getName(), Toast.LENGTH_SHORT).show();
 
-        mConnectThread = new ConnectThread(bt_device);
-        mConnectThread.start();
-        Log.d("Chat","Connection Success!");
+        //send button logic
+        send_btn.setOnClickListener(v -> {
+            String string= String.valueOf(Chat_msg_txt.getText());
+            sendReceive.write(string.getBytes()); //send data using new thread
+            Chat_msg_txt.setText(""); //clear message box
+                });
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Log.d("Chat","Closing after 10 seconds");
+    }
+
+
+    //close connection when chat activity closes
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         mConnectThread.cancel();
     }
 
@@ -76,17 +97,8 @@ public class ChatActivity extends AppCompatActivity {
 
             switch (msg.what)
             {
-                case STATE_LISTENING:
-                    Log.d("handler","Listening");
-                    break;
-                case STATE_CONNECTING:
-                    Log.d("handler","Connecting");
-                    break;
-                case STATE_CONNECTED:
-                    Log.d("handler","Connected");
-                    break;
                 case STATE_CONNECTION_FAILED:
-                    Log.d("handler","Connection Failed");
+                    Log.e("handler","Connection Failed");
                     break;
                 case STATE_MESSAGE_RECEIVED:
                     byte[] readBuff= (byte[]) msg.obj;
@@ -104,13 +116,13 @@ public class ChatActivity extends AppCompatActivity {
     private class ConnectThread extends Thread {
         private final BluetoothAdapter bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
         private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
+        //private final BluetoothDevice mmDevice;
 
         public ConnectThread(BluetoothDevice device) {
             // Use a temporary object that is later assigned to mmSocket
             // because mmSocket is final.
             BluetoothSocket tmp = null;
-            mmDevice = device;
+            //mmDevice = device;
             try {
                 // Get a BluetoothSocket to connect with the given BluetoothDevice.
                 // MY_UUID is the app's UUID string, also used in the server code.
@@ -150,6 +162,7 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         // Closes the client socket and causes the thread to finish.
+        @SuppressWarnings("unused")
         public void cancel() {
             try {
                 mmSocket.close();
@@ -167,6 +180,7 @@ public class ChatActivity extends AppCompatActivity {
 
         public SendReceive (BluetoothSocket socket)
         {
+            Looper.prepare();
             bluetoothSocket=socket;
             InputStream tempIn=null;
             OutputStream tempOut=null;
@@ -187,10 +201,14 @@ public class ChatActivity extends AppCompatActivity {
             byte[] buffer=new byte[1024];
             int bytes;
 
+            //noinspection InfiniteLoopStatement
             while (true)
             {
                 try {
                     bytes=inputStream.read(buffer);
+                    if (bytes > 0) {
+                        Log.d("!!!", "got a message:");
+                    }
                     handler.obtainMessage(STATE_MESSAGE_RECEIVED,bytes,-1,buffer).sendToTarget();
                 } catch (IOException e) {
                     e.printStackTrace();
