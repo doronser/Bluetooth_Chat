@@ -38,9 +38,7 @@ public class ConnectionActivity extends AppCompatActivity {
     private ArrayList<String> devices_list = new ArrayList<>();
     private ArrayAdapter<String> devices_listAdapter;
 
-    //init list and adapter for chat messages
-    //private ArrayList<String> chat_list = new ArrayList<>();
-    //private ArrayAdapter<String> chat_listAdapter;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
