@@ -87,6 +87,7 @@ public class ConnectionActivity extends AppCompatActivity {
             }
         });
 
+
         //button to get paired devices list
         Button show_paired_btn = this.findViewById(R.id.show_paired_btn);
         show_paired_btn.setOnClickListener(v -> {
@@ -106,8 +107,6 @@ public class ConnectionActivity extends AppCompatActivity {
         });
 
 
-
-
         //button to make device discoverable
         Button make_visible_btn = this.findViewById(R.id.make_visible_btn);
         make_visible_btn.setOnClickListener(v -> {
@@ -116,10 +115,6 @@ public class ConnectionActivity extends AppCompatActivity {
             makeVisibleIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             startActivity(makeVisibleIntent);
             Toast.makeText(getApplicationContext(),"Device is now visible", Toast.LENGTH_SHORT).show();
-            //old code to switch tasks
-//            Intent intent = new Intent(ConnectionActivity.this, ChatActivity.class);
-//            intent.putExtra("msg", "switched activities :)");
-//            startActivity(intent);
 
         });
     }
@@ -131,28 +126,33 @@ public class ConnectionActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.paired_devices_cm, menu);
     }
 
+    //Connect to selected device from menu
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter(); //hail mary
         if (item.getItemId() == R.id.cmenu_connect) {
 
-            //implement BT connection
             //get the MenuItem text
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
             String key = ((TextView) info.targetView).getText().toString();
             Log.d("Connect","CONNECTION TO: "+key);
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter(); //hail mary
+
             if (!key.isEmpty() && bluetoothAdapter != null) {
                 // Get the device by MAC address, which is the last 17 chars in the View
                 String MACadd = key.substring(key.length() - 17);
-                Log.d("Connect","CONNECTION TO: "+MACadd);
                 BluetoothDevice bt_device = bluetoothAdapter.getRemoteDevice(MACadd);
 
-                //start new thread to try and conenct to the BT device
+                //start new thread to try and connect to the BT device
                 Log.d("Connect", "trying to connect to " + bt_device.getName());
-                ConnectThread testThread = new ConnectThread(bt_device);
 
-                testThread.start();
-                testThread.cancel();
+                //ConnectThread connectThread = new ConnectThread(bt_device);
+
+                //old code to switch tasks
+                Intent intent = new Intent(ConnectionActivity.this, ChatActivity.class);
+                intent.putExtra("bt_device", bt_device);
+                startActivity(intent);
+
+
             } else {
                 if (bluetoothAdapter == null) {
                     Log.e("Connect","BT adapter == null");
@@ -164,60 +164,4 @@ public class ConnectionActivity extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
-
-    //Connection class
-    private class ConnectThread extends Thread {
-        private final BluetoothAdapter bluetoothAdapter=BluetoothAdapter.getDefaultAdapter();
-        private final BluetoothSocket mmSocket;
-
-        public ConnectThread(BluetoothDevice device) {
-            // Use a temporary object that is later assigned to mmSocket
-            // because mmSocket is final.
-            BluetoothSocket tmp = null;
-
-            try {
-                // Get a BluetoothSocket to connect with the given BluetoothDevice.
-                // MY_UUID is the app's UUID string, also used in the server code.
-                UUID MY_UUID= UUID.fromString("94f39d29-7d6d-437d-973b-fba39e49d4ee");
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-            } catch (IOException e) {
-                Log.e("Connect", "Socket's create() method failed", e);
-            }
-            mmSocket = tmp;
-        }
-
-        public void start() {
-            // Cancel discovery because it otherwise slows down the connection.
-            bluetoothAdapter.cancelDiscovery();
-
-            try {
-                // Connect to the remote device through the socket. This call blocks
-                // until it succeeds or throws an exception.
-                mmSocket.connect();
-            } catch (IOException connectException) {
-                // Unable to connect; close the socket and return.
-                try {
-                    mmSocket.close();
-                } catch (IOException closeException) {
-                    Log.e("Connect", "Could not close the client socket", closeException);
-                }
-                return;
-            }
-
-            // The connection attempt succeeded. Perform work associated with
-            // the connection in a separate thread.
-            //manageMyConnectedSocket(mmSocket);
-            Toast.makeText(getApplicationContext(), "Connection Success!", Toast.LENGTH_SHORT).show();
-            Log.d("connect", "Connection Success!");
-        }
-
-        // Closes the client socket and causes the thread to finish.
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) {
-                Log.e("Connect", "Could not close the client socket", e);
-            }
-        }
-    }
 }
