@@ -32,10 +32,10 @@
 
     <ListView
         android:id="@+id/chat_lv"
-        android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="411dp"
+        android:layout_height="450dp"
         app:layout_constraintBottom_toTopOf="@+id/Chat_msg_txt"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

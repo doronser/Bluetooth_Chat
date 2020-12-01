@@ -48,6 +48,9 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
 
+        chat_listAdapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chat_list);
+        
         //get UI elements
         ListView lv =  findViewById(R.id.chat_lv);
         Button send_btn = findViewById(R.id.send_btn);
@@ -67,12 +70,12 @@ public class ChatActivity extends AppCompatActivity {
             Log.d("Chat", "Connection Success!");
         }
 
+
         //init received messages list
-        chat_listAdapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chat_list);
         lv.setAdapter(chat_listAdapter);
         registerForContextMenu(lv);
-
+        chat_list.clear();
+        chat_listAdapter.notifyDataSetChanged();
 
         //send button logic
         send_btn.setOnClickListener(v -> {

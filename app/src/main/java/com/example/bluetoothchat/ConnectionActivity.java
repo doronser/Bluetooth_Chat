@@ -45,8 +45,13 @@ public class ConnectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connection_layout);
-
-
+        devices_listAdapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, devices_list);
+        //get UI elements by id
+        ListView lv = findViewById(R.id.paried_devices_lv);
+        Button BT_on_btn = this.findViewById(R.id.BT_on_btn);
+        Button show_paired_btn = this.findViewById(R.id.show_paired_btn);
+        Button make_visible_btn = this.findViewById(R.id.make_visible_btn);
 
         //get BT adapter
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -57,19 +62,14 @@ public class ConnectionActivity extends AppCompatActivity {
         }
 
         //Paired Devices Context Menu
-        devices_listAdapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, devices_list);
-        ListView lv =  findViewById(R.id.paried_devices_lv);
         lv.setAdapter(devices_listAdapter);
         registerForContextMenu(lv);
-
         //add dummy item to devices list
         devices_list.add("dummy list item");
+        //devices_list.clear();
         devices_listAdapter.notifyDataSetChanged();
 
-
         //button to turn on BT
-        Button BT_on_btn = this.findViewById(R.id.BT_on_btn);
         BT_on_btn.setOnClickListener(v -> {
             assert bluetoothAdapter != null;
             if (!bluetoothAdapter.isEnabled()) {
@@ -87,7 +87,6 @@ public class ConnectionActivity extends AppCompatActivity {
 
 
         //button to get paired devices list
-        Button show_paired_btn = this.findViewById(R.id.show_paired_btn);
         show_paired_btn.setOnClickListener(v -> {
             //clear any previous devices
             devices_list.clear();
@@ -106,7 +105,6 @@ public class ConnectionActivity extends AppCompatActivity {
 
 
         //button to make device discoverable
-        Button make_visible_btn = this.findViewById(R.id.make_visible_btn);
         make_visible_btn.setOnClickListener(v -> {
 
             Intent makeVisibleIntent;
