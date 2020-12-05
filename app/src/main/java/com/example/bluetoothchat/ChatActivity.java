@@ -79,8 +79,9 @@ public class ChatActivity extends AppCompatActivity {
 
         //send button logic
         send_btn.setOnClickListener(v -> {
-            String string= String.valueOf(Chat_msg_txt.getText());
-            sendReceive.write(string.getBytes()); //send data using new thread
+            String msg_str= String.valueOf(Chat_msg_txt.getText());
+            Log.d("Chat", "Sending message: "+ msg_str);
+            sendReceive.write(msg_str.getBytes()); //send data using new thread
             Chat_msg_txt.setText(""); //clear message box
                 });
 
@@ -175,8 +176,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private class SendReceive extends Thread
-    {
+    private class SendReceive extends Thread {
         private final BluetoothSocket bluetoothSocket;
         private final InputStream inputStream;
         private final OutputStream outputStream;
@@ -193,6 +193,7 @@ public class ChatActivity extends AppCompatActivity {
                 tempOut=bluetoothSocket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.e("BT_IO", "failted to get BT IOstream.");
             }
 
             inputStream=tempIn;
